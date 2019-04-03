@@ -1,0 +1,24 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+spark = SparkSession.builder.appName("Empty-DF-amar")
+.config("spark.dynamicAllocation.enabled", "true")
+.config("spark.shuffle.service.enabled", "true")
+.config("spark.executor.cores","5")
+.config("spark.executor.memory", "36G")
+.config("spark.driver.memory", "86G")
+.config('spark.dynamicAllocation.maxExecutors','30')
+.enableHiveSupport()
+.getOrCreate()
+
+import os
+import calendar
+import time
+import string
+
+column_names = "ColA|ColB|ColC" 
+df = spark.createDataFrame( 
+[ tuple('' for i in column_names.split("|")) 
+], 
+column_names.split("|") 
+).where("1=0")
+df.show()
