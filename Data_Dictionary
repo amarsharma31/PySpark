@@ -1,0 +1,44 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+from pyspark.sql.functions import monotonically_increasing_id
+spark = SparkSession.builder.appName("data-dictionary-amar")
+.config("spark.dynamicAllocation.enabled", "true")
+.config("spark.shuffle.service.enabled", "true")
+.config("spark.executor.cores","5")
+.config("spark.executor.memory", "36G")
+.config("spark.driver.memory", "86G")
+.config('spark.dynamicAllocation.maxExecutors','30')
+.enableHiveSupport()
+.getOrCreate()
+
+import os
+import calendar
+import time
+import string
+
+from hdfs import InsecureClient
+from itertools import izip_longest as zip_longest
+
+client_hdfs = InsecureClient('http://10.1.2.9:50070', user='hdfs')
+sc = spark.sparkContext 
+path = input("Enter Path: ")
+#path = "hdfs:///tmp/test/amar/Data/"
+fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())
+list_status = fs.listStatus(spark._jvm.org.apache.hadoop.fs.Path(path))
+result = [file.getPath().getName() for file in list_status]
+gzList = [ fi for fi in result if fi.endswith(".gz") ]
+csvList = [ fi for fi in result if fi.endswith(".csv") ]
+
+
+master_data = {}
+if (len(csvList) != 0):
+    for i in range(len(csvList)):
+        df = spark.read.csv(path + csvList[i], sep=',', header='true', inferSchema='true')
+        df1 = df.dtypes
+        master_data.update({csvList[i]:df1})
+
+column_names, data = zip(*master_data.items())
+
+dest_path = input("Enter Destination Path: ")
+df = spark.createDataFrame(zip_longest(*data), column_names)
+df.coalesce(1).write.format("parquet").mode("append").save(dest_path)
