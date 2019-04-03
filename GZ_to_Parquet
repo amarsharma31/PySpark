@@ -1,0 +1,40 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+from pyspark.sql.functions import monotonically_increasing_id
+spark = SparkSession.builder.appName("gz2parquet-amar")
+.config("spark.dynamicAllocation.enabled", "true")
+.config("spark.shuffle.service.enabled", "true")
+.config("spark.executor.cores","5")
+.config("spark.executor.memory", "36G")
+.config("spark.driver.memory", "86G")
+.config('spark.dynamicAllocation.maxExecutors','30')
+.enableHiveSupport()
+.getOrCreate()
+
+import os
+import calendar
+import time
+import string
+
+from hdfs import InsecureClient
+from itertools import izip_longest as zip_longest
+from pyspark.sql.functions import substring 
+
+client_hdfs = InsecureClient('http://10.1.2.9:50070', user='hdfs')
+
+sc = spark.sparkContext 
+path = input("Enter Path: ")
+#path = "hdfs:///tmp/test/amar/gz/"
+fs = spark._jvm.org.apache.hadoop.fs.FileSystem.get(spark._jsc.hadoopConfiguration())
+list_status = fs.listStatus(spark._jvm.org.apache.hadoop.fs.Path(path))
+result = [file.getPath().getName() for file in list_status]
+gzList = [ fi for fi in result if fi.endswith(".gz") ]
+
+
+dest_path = "hdfs:///tmp/test/amar/gz_to_csv/"
+if (len(gzList) != 0):
+    for i in range(len(gzList)):
+        df = spark.read.csv(path + gzList[i], sep=',', header='true', inferSchema='true')
+        val = gzList[i]
+        v = val[:-7]
+        df.coalesce(1).write.format("parquet").mode("append").save(dest_path + v +".parquet")
