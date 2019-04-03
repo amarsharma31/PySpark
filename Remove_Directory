@@ -1,0 +1,15 @@
+import os
+from sys import stderr
+import sys
+import re
+import subprocess
+
+from subprocess import PIPE
+src_path="hdfs:///tmp/test/amar/data/p.parquet"
+#file_name="p.parquet"
+command="""hadoop fs -rm %s""" % (src_path)
+pobj = subprocess.Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
+
+stdo, stde = pobj.communicate()
+exit_code = pobj.returncode
+print(stde)
