@@ -1,0 +1,16 @@
+import os
+from sys import stderr
+import sys
+import re
+import subprocess
+
+from subprocess import PIPE
+src_path="/test/Amar/t1/Revenue.parquet" 
+dest_path="/test2/Amar_S1/merged_csv"
+#command = """hadoop fs –touchz %s""" %(dest_path )
+command="""hadoop fs -cp %s %s""" % (src_path,dest_path )
+pobj = subprocess.Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
+
+stdo, stde = pobj.communicate()
+exit_code = pobj.returncode
+print(stde)
