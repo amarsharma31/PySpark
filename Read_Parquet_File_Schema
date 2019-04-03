@@ -1,0 +1,23 @@
+from pyspark.sql import SparkSession
+from pyspark.sql import Row
+spark = SparkSession.builder.appName("csv-2-parquet-Amar")
+.config("spark.dynamicAllocation.enabled", "true")
+.config("spark.shuffle.service.enabled", "true")
+.config("spark.executor.cores","10")
+.config("spark.executor.memory", "48G")
+.config("spark.driver.memory", "86G")
+.config('spark.dynamicAllocation.maxExecutors','30')
+.enableHiveSupport()
+.getOrCreate()
+
+import os
+import calendar
+import time
+import string
+
+
+#sc = spark.sparkContext
+#spark.conf.set("spark.sql.parquet.mergeSchema", "true")
+df = spark.read.parquet("hdfs:///tmp/amar/Data/BigTable.parquet")
+#df = spark.read.csv("hdfs:///tmp/amar/test/Data/Acquisitions.csv")
+df.dtypes
