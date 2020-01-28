@@ -1,0 +1,115 @@
+cd /opt/kube/deployment
+kubectl get pods
+
+kubectl delete -f app-transaction.yml
+kubectl get pods
+
+kubectl delete -f app-resolve.yml
+kubectl get pods
+
+kubectl delete -f app-search.yml
+kubectl get pods
+
+kubectl delete -f app-investigate.yml
+kubectl get pods
+
+kubectl delete -f front-end.yml
+kubectl get pods
+
+kubectl delete -f config-server.yml
+kubectl get pods
+
+cp config-server.yml config-server.yml_backup_20200128
+
+wget https://artifactory.global.standardchartered.com/artifactory/generic-production_local/com/quantexa/script/CRQ000000992795/config-server.yml
+
+kubectl get pods
+
+kubectl create -f config-server.yml
+kubectl get pods
+kubectl logs -f config-server-566d79fdf9-hnfsn | grep -i 'started'
+
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f config-server-566d79fdf9-hnfsn | grep -i 'started'
+2020-01-28 03:16:26.542  INFO 80 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8888 (http)
+2020-01-28 03:16:27.419  INFO 80 --- [           main] c.q.s.c.ConfigServiceApplication         : Started ConfigServiceApplication in 13.895 seconds (JVM running for 14.781)
+
+
+kubectl create -f front-end.yml
+kubectl get pods
+
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f front-end-544679657d-ctlzb gateway | grep -i 'Started'
+2020-01-28 03:20:13.552  INFO 377 --- [           main] c.q.scb.gateway.GatewayApplication$      : Started GatewayApplication. in 14.581 seconds (JVM running for 15.425)
+^C^C
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f front-end-544679657d-ctlzb explorer-ui | grep -i 'Started'
+2020-01-28 03:21:01.927  INFO 14 --- [           main] com.quantexa.scb.UIApplication$          : Started UIApplication. in 10.299 seconds (JVM running for 11.055)
+^C
+
+
+kubectl create -f app-investigate.yml
+kubectl get pods
+kubectl logs -f app-investigate-0 | grep -i 'started'
+
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f app-investigate-0 | grep -i 'started'
+2020-01-28 03:25:28.415  INFO 146 --- [lt-dispatcher-4] akka.event.slf4j.Slf4jLogger             : Slf4jLogger started
+2020-01-28 03:25:28.707  INFO 146 --- [lt-dispatcher-4] akka.remote.Remoting                     : Remoting started; listening on addresses :[akka.tcp://QuantexaSystem@app-investigate-0.app-investigate-headless.default.svc.cluster.local:2551]
+2020-01-28 03:25:35.024  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : acl.database.slick.db - Started.
+2020-01-28 03:25:37.370  INFO 146 --- [t-dispatcher-46] c.q.clustering.DependencyResolver        : Service [ElasticLoader] not started: awaiting dependencies (query [resolverConfigMemento], error [quanfiguration: No routees available])
+2020-01-28 03:25:37.945  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : slick.db - Started.
+2020-01-28 03:25:37.963  INFO 146 --- [n-dispatcher-49] com.zaxxer.hikari.HikariDataSource       : slick.db - Started.
+2020-01-28 03:25:38.132  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : task.database.slick.db - Started.
+2020-01-28 03:25:38.395  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : task.database.slick.db - Started.
+2020-01-28 03:25:39.202  INFO 146 --- [n-dispatcher-57] com.zaxxer.hikari.HikariDataSource       : slick.db - Started.
+2020-01-28 03:25:39.317  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : slick.db - Started.
+2020-01-28 03:25:39.318  INFO 146 --- [n-dispatcher-58] com.zaxxer.hikari.HikariDataSource       : slick.db - Started.
+2020-01-28 03:25:39.620  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : intelligence.database.slick.db - Started.
+2020-01-28 03:25:39.646  INFO 146 --- [t-dispatcher-34] c.q.clustering.DependencyResolver        : Service [Intelligence] not started: awaiting dependencies (query [resolverConfigMemento], error [quanfiguration: No routees available])
+2020-01-28 03:25:39.797  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : slick.db - Started.
+2020-01-28 03:25:39.800  INFO 146 --- [n-dispatcher-73] com.zaxxer.hikari.HikariDataSource       : slick.db - Started.
+2020-01-28 03:25:40.070  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : investigation.database.slick.db - Started.
+2020-01-28 03:25:40.364  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : investigation.database.slick.db - Started.
+2020-01-28 03:25:40.419  INFO 146 --- [t-dispatcher-16] c.q.clustering.DependencyResolver        : Service [Investigation] not started: awaiting dependencies (query [resolverConfigMemento], error [quanfiguration: No routees available])
+2020-01-28 03:25:40.678  INFO 146 --- [t-dispatcher-35] c.q.clustering.DependencyResolver        : Service [ElasticLoader] not started: awaiting dependencies (query [resolverConfigMemento], error [quanfiguration: No routees available])
+2020-01-28 03:25:42.689  INFO 146 --- [           main] com.zaxxer.hikari.HikariDataSource       : security.database.slick.db - Started.
+2020-01-28 03:25:53.380  INFO 146 --- [           main] c.q.scb.app.explore.ExploreApplication$  : Started ExploreApplication. in 40.469 seconds (JVM running for 41.389)
+
+
+
+kubectl create -f app-search.yml
+kubectl get pods
+kubectl logs -f app-search-0 | grep -i 'started'
+
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f app-search-0 | grep -i 'started'
+2020-01-28 03:28:46.055  INFO 146 --- [lt-dispatcher-4] akka.event.slf4j.Slf4jLogger             : Slf4jLogger started
+2020-01-28 03:28:46.564  INFO 146 --- [lt-dispatcher-4] akka.remote.Remoting                     : Remoting started; listening on addresses :[akka.tcp://QuantexaSystem@192.168.249.208:2553]
+2020-01-28 03:29:01.744  INFO 146 --- [           main] c.q.scb.app.search.SearchApplication$    : Started SearchApplication. in 27.693 seconds (JVM running for 28.621)
+
+
+kubectl create -f app-resolve.yml
+kubectl get pods
+kubectl logs -f app-resolve-0 | grep -i 'started'
+
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f app-resolve-0 | grep -i 'started'
+2020-01-28 03:31:44.140  INFO 80 --- [lt-dispatcher-3] akka.event.slf4j.Slf4jLogger             : Slf4jLogger started
+2020-01-28 03:31:45.178  INFO 80 --- [lt-dispatcher-3] akka.remote.Remoting                     : Remoting started; listening on addresses :[akka.tcp://QuantexaSystem@192.168.225.75:2552]
+2020-01-28 03:32:13.926  INFO 80 --- [           main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8083 (http)
+2020-01-28 03:32:14.033  INFO 80 --- [           main] c.q.s.a.r.ResolveScoreApplication$       : Started ResolveScoreApplication. in 55.437 seconds (JVM running for 57.14)
+
+
+
+kubectl create -f app-transaction.yml
+kubectl get pods
+kubectl logs -f app-transaction-0 | grep -i 'started'
+
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f app-transaction-0 | grep -i 'started'
+2020-01-28 03:38:21.345  INFO 80 --- [lt-dispatcher-3] akka.event.slf4j.Slf4jLogger             : Slf4jLogger started
+2020-01-28 03:38:25.644  INFO 80 --- [lt-dispatcher-3] akka.remote.Remoting                     : Remoting started; listening on addresses :[akka.tcp://QuantexaSystem@192.168.230.76:2554]
+^C^C
+qxaops@hklvapapp896[CRQ000000992795_v6] $ kubectl logs -f app-transaction-0 | grep -i 'started'
+2020-01-28 03:38:21.345  INFO 80 --- [lt-dispatcher-3] akka.event.slf4j.Slf4jLogger             : Slf4jLogger started
+2020-01-28 03:38:25.644  INFO 80 --- [lt-dispatcher-3] akka.remote.Remoting                     : Remoting started; listening on addresses :[akka.tcp://QuantexaSystem@192.168.230.76:2554]
+2020-01-28 03:39:28.549  INFO 80 --- [           main] com.zaxxer.hikari.HikariDataSource       : transactions.database.slick.db - Started.
+2020-01-28 03:39:32.064  INFO 80 --- [           main] com.zaxxer.hikari.HikariDataSource       : transactions.database.slick.db - Started.
+2020-01-28 03:40:10.742  INFO 80 --- [           main] c.q.s.a.t.TransactionApplication$        : Started TransactionApplication. in 241.691 seconds (JVM running for 251.469)
+
+
+kubectl get pods
