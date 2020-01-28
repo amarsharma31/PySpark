@@ -1,0 +1,28 @@
+spark-submit \
+--class com.quantexa.scriptrunner.QuantexaSparkScriptRunner \
+--master yarn \
+--queue sgz2_frm_lnkanl-haas_prod-app \
+--num-executors 4 \
+--executor-cores 2 \
+--executor-memory 24g \
+--driver-memory 16g \
+--conf "spark.sql.crossJoin.enabled=true" \
+--conf "spark.port.maxRetries=200" \
+--conf "spark.executor.heartbeatInterval=21600s" \
+--conf "spark.network.timeout=21600s" \
+--conf "spark.rpc.askTimeout=21600s" \
+--conf "spark.sql.broadcastTimeout=36000" \
+--conf "spark.driver.maxResultSize=12g" \
+--conf "spark.executor.extraJavaOptions=-Xss2048m" \
+--conf "spark.default.parallelism=2001" \
+--conf "spark.yarn.executor.memoryOverhead=16g" \
+--conf "spark.driver.cores=4" \
+--conf "spark.executor.extraJavaOptions=-XX:+UseG1GC -XX:InitiatingHeapOccupancyPercent=35 -DlibpostalDataDir=./libpostal_datadir.tar.gz" \
+--conf "spark.executor.extraLibraryPath=/usr/hdp/current/hadoop-client/lib/native" \
+--conf "spark.driver.extraClassPath=/usr/lib/hadoop-lzo/lib/*:./" \
+--conf "spark.driver.extraLibraryPath=./joint.tar.gz" \
+--conf "spark.executor.extraLibraryPath=./joint.tar.gz" \
+--conf "spark.executor.extraClassPath=/usr/lib/hadoop-lzo/lib/*:./" \
+--conf "spark.yarn.dist.archives=../../../jars/libpostal/joint.tar.gz,../../../jars/libpostal/libpostal_datadir.tar.gz" \
+--jars ../../../jars/libpostal/jpostal.jar,../../../jars/scb-etl-model-shadow_2.11-dependency-1.1.5-all.jar \
+../../../jars/scb-etl-model-shadow_2.11-projects-1.1.5-all.jar "$@"
